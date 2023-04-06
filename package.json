@@ -1,0 +1,33 @@
+{
+  "type": "module",
+  "name": "cs5610-06-sp23-team22-node",
+  "version": "1.0.0",
+  "description": "Node.js HTTP Web server for team 22 final project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kachalmers/cs5610-06-sp23-team22-node.git"
+  },
+  "keywords": [
+    "Node",
+    "REST",
+    "Server",
+    "HTTP"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kachalmers/cs5610-06-sp23-team22-node/issues"
+  },
+  "homepage": "https://github.com/kachalmers/cs5610-06-sp23-team22-node#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mongoose": "^7.0.3"
+  }
+}
