@@ -22,6 +22,27 @@ const FollowsController = (app) => {
         res.json(follow);
     }
 
+    const toggleFollow = async (req,res) => {
+        const follower = req.params.followerId;
+        const followee = req.params.followeeId;
+
+        // Find follow between given users if it exists
+        let follow = await followsDao.findFollowByUserIds(follower, followee);
+
+        // If follow between users exists...
+        if (follow) {
+            // Delete follow
+            await followsDao.userUnfollowsUser(req.params.followerId, req.params.followeeId);
+        } else {
+            // Create follow
+            const followerId = req.params.followerId;
+            const followeeId = req.params.followeeId;
+            await followsDao.userFollowsUser(followerId, followeeId);
+        }
+        res.sendStatus(200);
+    }
+
+    app.put("/api/users/:followerId/follows/:followeeId",toggleFollow);
     app.get("/api/follows",findAllFollows);
     app.get("/api/users/:followerId/follows/:followeeId", findFollowByUserIds);
     app.post("/api/users/:followerId/follows/:followeeId", userFollowsUser);
