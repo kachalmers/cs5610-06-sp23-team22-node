@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 
 // Import controllers
 import UserController from './users/users-controller.js';
+import FollowsController from "./follows/follows-controller.js";
 
 dotenv.config();
 const CONNECTION_STRING = process.env.DB_CONNECTION_STRING
@@ -30,6 +31,7 @@ app.use(
 
 // Call controllers
 UserController(app);
+FollowsController(app);
 
 app.get("/", function (req, res) {
     res.send("Hello World");
