@@ -7,6 +7,7 @@ const usersSchema = new mongoose.Schema(
         lastName: String,
         email: { type: String },
         role: { type: String, default: "USER", enum: ["ADMIN", "ARTIST", "USER"] },
+        followedByMe: {type: Boolean, default: false}
     },
     {
         collection: "users",

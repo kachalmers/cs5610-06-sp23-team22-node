@@ -1,9 +1,30 @@
 import * as usersDao from "./users-dao.js";
+import * as followDao from "../follows/follows-dao.js";
 
 function UsersController(app) {
     const findAllUsers = async (req, res) => {
-        const users = await usersDao.findAllUsers();
-        res.send(users);
+        const currentUser = req.session["currentUser"];
+
+        // If a user is logged in...
+        if (currentUser) {
+            const users = await usersDao.findAllUsers();    // Get all users
+
+            const markedUsers = await Promise.all(users.map(async (user) => {   // For each user
+                // Search for a follow by currentUser of user
+                let follow = await followDao.findFollowByUserIds(currentUser._id,user._id);
+
+                if (follow !== null) {   // if currentUser follows user
+                    user.followedByMe = true;
+                    return user;
+                } else {
+                    return user;
+                }
+            }))
+            res.send(markedUsers);
+        } else {
+            const users = await usersDao.findAllUsers();
+            res.send(users);
+        }
     };
     const findUserById = async (req, res) => {
         const id = req.params.id;
@@ -25,13 +46,10 @@ function UsersController(app) {
         res.json(status);
     };
     const login = async (req, res) => {
-        const user = req.body;
-        console.log(user);
         const foundUser = await usersDao.findUserByCredentials(
             req.body.username,
             req.body.password
         );
-        console.log(foundUser);
         if (foundUser) {
             req.session["currentUser"] = foundUser;
             res.send(foundUser);

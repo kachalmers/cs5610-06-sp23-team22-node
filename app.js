@@ -5,7 +5,7 @@ import session from "express-session";
 import dotenv from "dotenv";
 
 // Import controllers
-import UserController from './users/users-controller.js';
+import UsersController from './users/users-controller.js';
 import FollowsController from "./follows/follows-controller.js";
 
 dotenv.config();
@@ -30,7 +30,7 @@ app.use(
 );
 
 // Call controllers
-UserController(app);
+UsersController(app);
 FollowsController(app);
 
 app.get("/", function (req, res) {

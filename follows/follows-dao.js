@@ -16,3 +16,11 @@ export const findAllFollows = async () => {
 export const findFollowByUserIds = async (followerId,followeeId) => {
     return followsModel.findOne({followerId,followeeId});
 };
+
+export const findFolloweesByUserId = async (followerId) => {
+    return followsModel.find({followerId});
+};
+
+export const findFollowersByUserId = async (followeeId) => {
+    return followsModel.find({followeeId});
+};
