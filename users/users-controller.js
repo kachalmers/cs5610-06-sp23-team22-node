@@ -12,14 +12,17 @@ function UsersController(app) {
             const markedUsers = await Promise.all(users.map(async (user) => {   // For each user
                 // Search for a follow by currentUser of user
                 let follow = await followDao.findFollowByUserIds(currentUser._id,user._id);
+                console.log("FOLLOW: "+follow);
 
                 if (follow !== null) {   // if currentUser follows user
                     user.followedByMe = true;
+                    console.log("FOLLOWED BY ME");
                     return user;
                 } else {
                     return user;
                 }
             }))
+            console.log("markedUsers?")
             res.send(markedUsers);
         } else {
             const users = await usersDao.findAllUsers();
@@ -42,6 +45,10 @@ function UsersController(app) {
     };
     const updateUser = async (req, res) => {
         const id = req.params.id;
+        const currentUser = req.session["currentUser"];
+        if (id===currentUser._id) {
+            req.session["currentUser"] = { ...currentUser, ...req.body }
+        }
         const status = await usersDao.updateUser(id, req.body);
         res.json(status);
     };
