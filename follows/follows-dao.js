@@ -18,9 +18,9 @@ export const findFollowByUserIds = async (followerId,followeeId) => {
 };
 
 export const findFolloweesByUserId = async (followerId) => {
-    return followsModel.find({followerId});
+    return followsModel.find({followerId: followerId}).populate('followeeId');
 };
 
 export const findFollowersByUserId = async (followeeId) => {
-    return followsModel.find({followeeId});
+    return followsModel.find({followeeId: followeeId}).populate('followerId');
 };
