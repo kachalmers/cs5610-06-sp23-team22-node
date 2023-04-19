@@ -1,5 +1,7 @@
 import * as likesDao from "./likes-dao.js";
 import * as tracksDao from "../tracks/tracks-dao.js";
+import * as albumsDao from "../albums/albums-dao.js";
+import * as artistsDao from "../artists/artists-dao.js";
 import * as followsDao from "../follows/follows-dao.js";
 
 const LikesController = (app) => {
@@ -18,8 +20,8 @@ const LikesController = (app) => {
         res.json(likes);
     }
 
-    const findLikesByUserId = async (req,res) => {
-        const like = await likesDao.findLikesByUserId(req.params.userId);
+    const findTrackLikesByUserId = async (req,res) => {
+        const like = await likesDao.findTrackLikesByUserId(req.params.userId);
         res.json(like);
     }
 
@@ -31,9 +33,9 @@ const LikesController = (app) => {
         res.json(likesOfUserFollowees);
     }
 
-    const toggleLike = async (req,res) => {
+    const toggleTrackLike = async (req,res) => {
         const userId = req.params.userId;
-        const spotifyTrackId = req.params.spotifyTrackId;
+        const spotifyTrackId = req.params.spotifyId;
 
         // Find if track exists in database
         let track = await tracksDao.findTrackBySpotifyId(spotifyTrackId);
@@ -62,10 +64,74 @@ const LikesController = (app) => {
         res.sendStatus(200);
     }
 
-    app.put("/api/users/:userId/likes/:spotifyTrackId",toggleLike);
+    const toggleAlbumLike = async (req,res) => {
+        const userId = req.params.userId;
+        const spotifyAlbumId = req.params.spotifyId;
+
+        // Find if album exists in database
+        let album = await albumsDao.findAlbumBySpotifyId(spotifyAlbumId);
+
+        // If album doesn't exist in our db yet...
+        if (album === null) {
+            // Create album
+            album = await albumsDao.createAlbum(req.body);
+        }
+
+        // Find like between given user and album if it exists
+        let like = await likesDao.findLikeByUserAndAlbum(userId, album._id);
+
+        // If like between user and album doesn't exist...
+        if (like !== null) {
+            // Delete like
+            await likesDao.userUnlikesAlbum(userId, album._id);
+            album.likes--;
+            await albumsDao.updateAlbum(spotifyAlbumId,album);
+        } else {
+            // Create like
+            await likesDao.userLikesAlbum(userId, album._id);
+            album.likes++;
+            await albumsDao.updateAlbum(spotifyAlbumId,album);
+        }
+        res.sendStatus(200);
+    }
+
+    const toggleArtistLike = async (req,res) => {
+        const userId = req.params.userId;
+        const spotifyArtistId = req.params.spotifyId;
+
+        // Find if artist exists in database
+        let artist = await artistsDao.findArtistBySpotifyId(spotifyArtistId);
+
+        // If artist doesn't exist in our db yet...
+        if (artist === null) {
+            // Create artist
+            artist = await artistsDao.createArtist(req.body);
+        }
+
+        // Find like between given user and artist if it exists
+        let like = await likesDao.findLikeByUserAndArtist(userId, artist._id);
+
+        // If like between user and artist doesn't exist...
+        if (like !== null) {
+            // Delete like
+            await likesDao.userUnlikesArtist(userId, artist._id);
+            artist.likes--;
+            await artistsDao.updateArtist(spotifyArtistId,artist);
+        } else {
+            // Create like
+            await likesDao.userLikesArtist(userId, artist._id);
+            artist.likes++;
+            await artistsDao.updateArtist(spotifyArtistId,artist);
+        }
+        res.sendStatus(200);
+    }
+
+    app.put("/api/users/:userId/likes/tracks/:spotifyId",toggleTrackLike);
+    app.put("/api/users/:userId/likes/albums/:spotifyId",toggleAlbumLike);
+    app.put("/api/users/:userId/likes/artists/:spotifyId",toggleArtistLike);
     app.get("/api/likes",findAllLikes);
-    app.get("/api/users/:userId/likes", findLikesByUserId);
-    app.get("/api/users/:userId/followees/likes",findLikesOfUserFollowees)
+    app.get("/api/users/:userId/likes/tracks", findTrackLikesByUserId);
+    app.get("/api/users/:userId/followees/likes",findLikesOfUserFollowees);
     app.post("/api/users/:userId/likes/:trackId", userLikesTrack);
     app.delete("/api/users/:userId/likes/:trackId", userUnlikesTrack);
 };

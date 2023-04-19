@@ -1,4 +1,5 @@
 import * as tracksDao from "./tracks-dao.js";
+import {createTrackWithArtists} from "../helpers/helpers.js";
 
 function TracksController(app) {
     const findAllTracks = async (req,res) => {
@@ -12,8 +13,22 @@ function TracksController(app) {
         res.send(track);
     }
 
+    /*
+    track: {
+        spotifyId: String,
+        name: String,
+        artists: [
+            {
+                spotifyId: String,
+                name: String,
+                imageUrl: String
+            }
+        ],
+        imageUrl: String
+    }
+ */
     const createTrack = async (req,res) => {
-        const track = await tracksDao.createTrack(req.body);
+        const track = await createTrackWithArtists(req.body);
         res.json(track);
     }
 

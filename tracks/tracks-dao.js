@@ -1,7 +1,7 @@
 import tracksModel from "./tracks-model.js";
 
 export const findAllTracks = async () => {
-    const tracks = await tracksModel.find();
+    const tracks = await tracksModel.find().populate('artists');
     return tracks;
 }
 
@@ -11,7 +11,7 @@ export const createTrack = async (track) => {
 }
 
 export const findTrackBySpotifyId = async (stid) => {
-    const track = await tracksModel.findOne({spotifyId:stid});
+    const track = await tracksModel.findOne({spotifyId:stid}).populate('artists');
     return track;
 }
 

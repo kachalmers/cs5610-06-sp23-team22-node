@@ -1,5 +1,5 @@
 import mongoose, {Schema} from "mongoose";
-const tracksSchema = new mongoose.Schema(
+const albumsSchema = new mongoose.Schema(
     {
         spotifyId: String,
         name: String,
@@ -9,7 +9,7 @@ const tracksSchema = new mongoose.Schema(
         likedByMe: {type: Boolean, default: false}
     },
     {
-        collection: "tracks",
+        collection: "albums",
     }
 );
-export default tracksSchema;
+export default albumsSchema;
