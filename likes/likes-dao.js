@@ -53,6 +53,20 @@ export const findTrackLikesByUserId = async (userId) => {
     ]);
 };
 
+export const findAlbumLikesByUserId = async (userId) => {
+    return likesModel.find({userId:userId, albumId: { $exists: true } }).populate([
+        { path: "albumId", populate: { path: "artists" } },
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+    ]);
+};
+
+export const findArtistLikesByUserId = async (userId) => {
+    return likesModel.find({userId:userId, artistId: { $exists: true } }).populate([
+        { path: "artistId" },
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+    ]);
+};
+
 export const findLikesByUserIds = async (userIds) => {
     return likesModel.find({userId: {"$in":userIds}}).populate([
         { path: "trackId", populate: { path: "artists" } },

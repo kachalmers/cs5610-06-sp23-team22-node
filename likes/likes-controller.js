@@ -21,8 +21,18 @@ const LikesController = (app) => {
     }
 
     const findTrackLikesByUserId = async (req,res) => {
-        const like = await likesDao.findTrackLikesByUserId(req.params.userId);
-        res.json(like);
+        const likes = await likesDao.findTrackLikesByUserId(req.params.userId);
+        res.json(likes);
+    }
+
+    const findAlbumLikesByUserId = async (req,res) => {
+        const likes = await likesDao.findAlbumLikesByUserId(req.params.userId);
+        res.json(likes);
+    }
+
+    const findArtistLikesByUserId = async (req,res) => {
+        const likes = await likesDao.findArtistLikesByUserId(req.params.userId);
+        res.json(likes);
     }
 
     const findLikesOfUserFollowees = async (req,res) => {
@@ -131,6 +141,8 @@ const LikesController = (app) => {
     app.put("/api/users/:userId/likes/artists/:spotifyId",toggleArtistLike);
     app.get("/api/likes",findAllLikes);
     app.get("/api/users/:userId/likes/tracks", findTrackLikesByUserId);
+    app.get("/api/users/:userId/likes/albums", findAlbumLikesByUserId);
+    app.get("/api/users/:userId/likes/artists", findArtistLikesByUserId);
     app.get("/api/users/:userId/followees/likes",findLikesOfUserFollowees);
     app.post("/api/users/:userId/likes/:trackId", userLikesTrack);
     app.delete("/api/users/:userId/likes/:trackId", userUnlikesTrack);
