@@ -3,6 +3,7 @@ import * as tracksDao from "../tracks/tracks-dao.js";
 import * as albumsDao from "../albums/albums-dao.js";
 import * as artistsDao from "../artists/artists-dao.js";
 import * as followsDao from "../follows/follows-dao.js";
+import * as helpers from "../helpers/helpers.js";
 
 const LikesController = (app) => {
     const userLikesTrack = async (req, res) => {
@@ -53,7 +54,7 @@ const LikesController = (app) => {
         // If track doesn't exist in our db yet
         if (track === null) {
             // Create track
-            track = await tracksDao.createTrack(req.body);
+            track = await helpers.createTrackWithArtists(req.body);
         }
 
         // Find like between given user and track if it exists
@@ -84,7 +85,7 @@ const LikesController = (app) => {
         // If album doesn't exist in our db yet...
         if (album === null) {
             // Create album
-            album = await albumsDao.createAlbum(req.body);
+            album = await helpers.createAlbumWithArtists(req.body);
         }
 
         // Find like between given user and album if it exists

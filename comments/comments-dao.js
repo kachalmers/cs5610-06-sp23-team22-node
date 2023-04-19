@@ -5,33 +5,56 @@ export const findAllComments = async () => {
     return comments;
 }
 
+export const findCommentsByUserIds = async (userIds) => {
+    return commentsModel.find({userId: {"$in":userIds}}).populate([
+        { path: "trackId", populate: { path: "artists" } },
+        { path: "albumId", populate: { path: "artists" } },
+        { path: "artistId" },
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+    ]);
+}
+
 export const createComment = async (comment) => {
     const newComment = await commentsModel.create(comment);
     return newComment;
 }
 
 export const findCommentsByUserId = async (id) => {
-    const comments = await commentsModel.find({userId:id});
-    return comments;
+    return commentsModel.find({userId: id}).populate([
+        { path: "trackId", populate: { path: "artists" } },
+        { path: "albumId", populate: { path: "artists" } },
+        { path: "artistId" },
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+    ]);
 }
 
 export const findCommentsByArtistId = async (id) => {
-    const comments = await commentsModel.find({artistId:id});
+    const comments = await commentsModel.find({artistId:id}).populate(
+        { path: "artistId" }
+    );
     return comments;
 }
 
 export const findCommentsByAlbumId = async (id) => {
-    const comments = await commentsModel.find({albumId:id});
+    const comments = await commentsModel.find({albumId:id}).populate([
+        { path: "albumId", populate: { path: "artists" } },
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+    ]);
     return comments;
 }
 
 export const findCommentsByTrackId = async (id) => {
-    const comments = await commentsModel.find({trackId:id});
+    const comments = await commentsModel.find({trackId:id}).populate([
+        { path: "trackId", populate: { path: "artists" } },
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+    ]);
     return comments;
 }
 
 export const findCommentsByLikeId = async (id) => {
-    const comments = await commentsModel.find({likeId:id});
+    const comments = await commentsModel.find({likeId:id}).populate(
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+    );
     return comments;
 }
 
@@ -52,5 +75,10 @@ export const updateTrackComment = async (id,newComment) => {
 
 export const updateLikeComment = async (id,newComment) => {
     const status = await commentsModel.updateOne({likeId:id},newComment);
+    return status;
+}
+
+export const deleteComment = async (id) => {
+    const status = await commentsModel.deleteOne({_id:id});
     return status;
 }
