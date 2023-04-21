@@ -29,32 +29,38 @@ export const findCommentsByUserId = async (id) => {
 }
 
 export const findCommentsByArtistId = async (id) => {
-    const comments = await commentsModel.find({artistId:id}).populate(
-        { path: "artistId" }
-    );
+    const comments = await commentsModel.find({artistId:id})
+        .sort({date: -1})
+        .populate({ path: "artistId" });
     return comments;
 }
 
 export const findCommentsByAlbumId = async (id) => {
-    const comments = await commentsModel.find({albumId:id}).populate([
-        { path: "albumId", populate: { path: "artists" } },
-        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
-    ]);
+    const comments = await commentsModel.find({albumId:id})
+        .sort({date: -1})
+        .populate([
+            { path: "albumId", populate: { path: "artists" } },
+            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+        ]);
     return comments;
 }
 
 export const findCommentsByTrackId = async (id) => {
-    const comments = await commentsModel.find({trackId:id}).populate([
-        { path: "trackId", populate: { path: "artists" } },
-        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
-    ]);
+    const comments = await commentsModel.find({trackId:id})
+        .sort({date: -1})
+        .populate([
+            { path: "trackId", populate: { path: "artists" } },
+            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+        ]);
     return comments;
 }
 
 export const findCommentsByLikeId = async (id) => {
-    const comments = await commentsModel.find({likeId:id}).populate(
-        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
-    );
+    const comments = await commentsModel.find({likeId:id})
+        .sort({date: -1})
+        .populate(
+            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+        );
     return comments;
 }
 
