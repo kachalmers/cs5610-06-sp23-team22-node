@@ -10,7 +10,7 @@ export const findCommentsByUserIds = async (userIds) => {
         { path: "trackId", populate: { path: "artists" } },
         { path: "albumId", populate: { path: "artists" } },
         { path: "artistId" },
-        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
     ]);
 }
 
@@ -24,14 +24,17 @@ export const findCommentsByUserId = async (id) => {
         { path: "trackId", populate: { path: "artists" } },
         { path: "albumId", populate: { path: "artists" } },
         { path: "artistId" },
-        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+        { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
     ]);
 }
 
 export const findCommentsByArtistId = async (id) => {
     const comments = await commentsModel.find({artistId:id})
         .sort({date: -1})
-        .populate({ path: "artistId" });
+        .populate([
+            { path: "artistId" },
+            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
+        ]);
     return comments;
 }
 
@@ -40,7 +43,7 @@ export const findCommentsByAlbumId = async (id) => {
         .sort({date: -1})
         .populate([
             { path: "albumId", populate: { path: "artists" } },
-            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
         ]);
     return comments;
 }
@@ -50,7 +53,7 @@ export const findCommentsByTrackId = async (id) => {
         .sort({date: -1})
         .populate([
             { path: "trackId", populate: { path: "artists" } },
-            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
         ]);
     return comments;
 }
@@ -59,9 +62,14 @@ export const findCommentsByLikeId = async (id) => {
     const comments = await commentsModel.find({likeId:id})
         .sort({date: -1})
         .populate(
-            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1 } }
+            { path: "userId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
         );
     return comments;
+}
+
+export const updateComment = async (id,newComment) => {
+    const status = await commentsModel.updateOne({_id:id},newComment);
+    return status;
 }
 
 export const updateArtistComment = async (id,newComment) => {

@@ -111,7 +111,7 @@ const CommentsController = (app) => {
             text: commentText,
             artistId: artist._id
         }
-
+        console.log(comment);
         const newComment = await commentsDao.createComment(comment);
         res.json(newComment);
     };
@@ -151,7 +151,6 @@ const CommentsController = (app) => {
         const artist = await artistsDao.findArtistBySpotifyId(req.params.spotifyId);
 
         if (artist === null) {
-            console.log("artist null")
             res.json([]);
         } else {
             console.log(artist);
@@ -202,6 +201,11 @@ const CommentsController = (app) => {
         res.json(status);
     }
 
+    const updateComment = async (req,res) => {
+        const status = await commentsDao.updateComment(req.params.commentId,req.body);
+        res.json(status);
+    }
+
     app.get("/api/comments",findAllComments);
     app.get("/api/artists/:spotifyId/comments",findCommentsByArtistSpotifyId);
     app.get("/api/albums/:spotifyId/comments",findCommentsByAlbumSpotifyId);
@@ -209,6 +213,7 @@ const CommentsController = (app) => {
     app.get("/api/likes/:likeId/comments",findCommentsByLikeId);
     app.get("/api/users/:userId/comments", findCommentsByUserId);
     app.get("/api/users/:userId/followees/comments",findCommentsOfUserFollowees);
+    app.put("/api/comments/:commentId",updateComment);
     app.post("/api/users/:userId/comments/artists/:spotifyId", userCommentsOnArtist);
     app.post("/api/users/:userId/comments/albums/:spotifyId", userCommentsOnAlbum);
     app.post("/api/users/:userId/comments/tracks/:spotifyId", userCommentsOnTrack);
