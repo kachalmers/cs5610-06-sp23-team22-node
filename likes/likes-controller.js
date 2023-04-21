@@ -40,6 +40,7 @@ const LikesController = (app) => {
         // Find given user's followees
         let followsWithUserFollowees = await followsDao.findFolloweesByUserId(req.params.userId);
         let followees = followsWithUserFollowees.map(follow => follow.followeeId);
+        followees.push(req.params.userId);
         const likesOfUserFollowees = await likesDao.findLikesByUserIds(followees);
         res.json(likesOfUserFollowees);
     }
@@ -156,6 +157,12 @@ const LikesController = (app) => {
         }
     }
 
+    const updateLike = async (req,res) => {
+        const id = req.params.likeId;
+        const status = await likesDao.updateLike(id, req.body);
+        res.json(status);
+    }
+
     app.put("/api/users/:userId/likes/tracks/:spotifyId",toggleTrackLike);
     app.put("/api/users/:userId/likes/albums/:spotifyId",toggleAlbumLike);
     app.put("/api/users/:userId/likes/artists/:spotifyId",toggleArtistLike);
@@ -169,5 +176,6 @@ const LikesController = (app) => {
     app.get("/api/users/:userId/followees/likes",findLikesOfUserFollowees);
     app.post("/api/users/:userId/likes/:trackId", userLikesTrack);
     app.delete("/api/users/:userId/likes/:trackId", userUnlikesTrack);
+    app.put("/api/likes/:likeId",updateLike);
 };
 export default LikesController;
