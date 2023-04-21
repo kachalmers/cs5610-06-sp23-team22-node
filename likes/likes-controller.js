@@ -157,6 +157,44 @@ const LikesController = (app) => {
         }
     }
 
+    const findArtistLikeByIds = async (req,res) => {
+        const userId = req.params.userId;
+        const spotifyArtistId = req.params.spotifyId;
+        if (userId===undefined || spotifyArtistId===undefined) {
+            res.json({})
+        } else {
+            // Find track in db
+            let artist = await artistsDao.findArtistBySpotifyId(spotifyArtistId);
+
+            if (artist) {
+                // Find like by user and track ids
+                let like = await likesDao.findLikeByUserAndArtist(userId,artist._id)
+                res.json(like);
+            } else {
+                res.json({});
+            }
+        }
+    }
+
+    const findAlbumLikeByIds = async (req,res) => {
+        const userId = req.params.userId;
+        const spotifyAlbumId = req.params.spotifyId;
+        if (userId===undefined || spotifyAlbumId===undefined) {
+            res.json({})
+        } else {
+            // Find track in db
+            let album = await albumsDao.findAlbumBySpotifyId(spotifyAlbumId);
+
+            if (album) {
+                // Find like by user and track ids
+                let like = await likesDao.findLikeByUserAndAlbum(userId,album._id)
+                res.json(like);
+            } else {
+                res.json({});
+            }
+        }
+    }
+
     const updateLike = async (req,res) => {
         const id = req.params.likeId;
         const status = await likesDao.updateLike(id, req.body);
@@ -169,8 +207,8 @@ const LikesController = (app) => {
     app.get("/api/likes",findAllLikes);
     app.get("/api/users/:userId/likes/tracks", findTrackLikesByUserId);
     app.get("/api/users/:userId/likes/tracks/:spotifyId", findTrackLikeByIds);
-    //app.get("/api/users/:userId/likes/tracks/:spotifyId", findAlbumLikeByIds);
-    //app.get("/api/users/:userId/likes/tracks/:spotifyId", findArtistLikeByIds);
+    app.get("/api/users/:userId/likes/albums/:spotifyId", findAlbumLikeByIds);
+    app.get("/api/users/:userId/likes/artists/:spotifyId", findArtistLikeByIds);
     app.get("/api/users/:userId/likes/albums", findAlbumLikesByUserId);
     app.get("/api/users/:userId/likes/artists", findArtistLikesByUserId);
     app.get("/api/users/:userId/followees/likes",findLikesOfUserFollowees);
