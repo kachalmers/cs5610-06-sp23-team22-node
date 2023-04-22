@@ -93,3 +93,8 @@ export const updateLike = async (id,like) => {
     const status = await likesModel.updateOne({ _id: id }, like);
     return status;
 };
+
+export const deleteLikesByUser = async (id) => {
+    const status = await likesModel.deleteMany({"userId._id":id})
+    return status;
+};

@@ -1,5 +1,7 @@
 import * as usersDao from "./users-dao.js";
-import * as followDao from "../follows/follows-dao.js";
+import * as followsDao from "../follows/follows-dao.js";
+import * as commentsDao from "../comments/comments-dao.js";
+import * as likesDao from "../likes/likes-dao.js";
 
 function UsersController(app) {
     const findAllUsers = async (req, res) => {
@@ -11,7 +13,7 @@ function UsersController(app) {
 
             const markedUsers = await Promise.all(users.map(async (user) => {   // For each user
                 // Search for a follow by currentUser of user
-                let follow = await followDao.findFollowByUserIds(currentUser._id,user._id);
+                let follow = await followsDao.findFollowByUserIds(currentUser._id,user._id);
                 console.log("FOLLOW: "+follow);
 
                 if (follow !== null) {   // if currentUser follows user
@@ -36,6 +38,17 @@ function UsersController(app) {
     };
     const deleteUserById = async (req, res) => {
         const id = req.params.id;
+
+        // Delete user's likes
+        await likesDao.deleteLikesByUser(id);
+
+        // Delete user's comments
+        await commentsDao.deleteCommentsByUser(id);
+
+        // Delete user's follows
+        await followsDao.deleteFollowsByFollower(id);
+        await followsDao.deleteFollowsByFollowee(id);
+
         const status = await usersDao.deleteUser(id);
         res.json(status);
     };

@@ -96,3 +96,8 @@ export const deleteComment = async (id) => {
     const status = await commentsModel.deleteOne({_id:id});
     return status;
 }
+
+export const deleteCommentsByUser = async (id) => {
+    const status = await commentsModel.deleteMany({"userId._id":id})
+    return status;
+};

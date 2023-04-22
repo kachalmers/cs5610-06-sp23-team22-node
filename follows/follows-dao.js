@@ -9,7 +9,11 @@ export const userUnfollowsUser = async (followerId, followeeId) => {
 };
 
 export const findAllFollows = async () => {
-    const follows = await followsModel.find();
+    const follows = await followsModel.find()
+        .populate([
+            { path: "followeeId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } },
+            { path: "followerId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
+        ]);
     return follows;
 };
 
@@ -29,4 +33,14 @@ export const findFollowersByUserId = async (followeeId) => {
         .populate(
             { path: "followerId", select: { '_id':1, 'username':1, 'firstName':1, 'lastName':1, 'role':1 } }
         );
+};
+
+export const deleteFollowsByFollower = async (id) => {
+    const status = await followsModel.deleteMany({followerId:id})
+    return status;
+};
+
+export const deleteFollowsByFollowee = async (id) => {
+    const status = await followsModel.deleteMany({followeeId:id})
+    return status;
 };
