@@ -101,12 +101,42 @@ function UsersController(app) {
         }
     };
 
+    const findAllUsersByText = async (req, res) => {
+        const currentUser = req.session["currentUser"];
+        const text = req.params.text;
+
+        const users = await usersDao.findAllUsersByText(text);    // Get all users
+
+        // If a user is logged in...
+        if (currentUser) {
+
+            const markedUsers = await Promise.all(users.map(async (user) => {   // For each user
+                // Search for a follow by currentUser of user
+                let follow = await followsDao.findFollowByUserIds(currentUser._id,user._id);
+                console.log("FOLLOW: "+follow);
+
+                if (follow !== null) {   // if currentUser follows user
+                    user.followedByMe = true;
+                    console.log("FOLLOWED BY ME");
+                    return user;
+                } else {
+                    return user;
+                }
+            }))
+            console.log("markedUsers?")
+            res.send(markedUsers);
+        } else {
+            res.send(users);
+        }
+    };
+
     app.post("/api/users/login", login);
     app.post("/api/users/logout", logout);
     app.get("/api/users/profile", profile);
     app.post("/api/users/register", register);
 
     app.get("/api/users", findAllUsers);
+    app.get("/api/users/fields/:text", findAllUsersByText);
     app.get("/api/users/:id", findUserById);
     app.delete("/api/users/:id", deleteUserById);
     app.post("/api/users", createUser);

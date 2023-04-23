@@ -1,7 +1,18 @@
 import usersModel from "./users-model.js";
 
 export const findAllUsers = async () => {
-    const users = await usersModel.find();
+    const users = await usersModel.find({},{password:0,email:0});
+    return users;
+};
+
+export const findAllUsersByText = async (text) => {
+    const users = await usersModel.find({ $or: [
+        { "username": { "$regex": text, "$options": "i" } },
+        { "firstName": { "$regex": text, "$options": "i" } },
+        { "lastName": { "$regex": text, "$options": "i" } },
+        { "role": { "$regex": text, "$options": "i" } }
+        ]},{password:0,email:0})
+    ;
     return users;
 };
 
